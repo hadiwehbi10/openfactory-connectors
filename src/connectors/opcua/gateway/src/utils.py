@@ -6,7 +6,7 @@ This module provides helper functions for:
 
 - Extracting timestamps from OPC UA DataValues and events.
 - Finding OPC UA nodes using browse paths.
-- Converting OPC UA values into simpler Python values.
+- Normalizing OPC UA values into Python-native representations.
 
 Functions:
 - opcua_data_timestamp(data)
@@ -81,7 +81,8 @@ async def get_node_by_path(client: Client, path: str) -> Node:
 
     Args:
         client (Client): Connected OPC UA client.
-        path (str): Browse path used to find the node.
+        path (str): Slash-separated list of browse path segments in
+            the form ``"namespace_index:BrowseName"``.
 
     Returns:
         Node: The OPC UA node found at the given path.
@@ -141,7 +142,8 @@ async def get_node_by_path(client: Client, path: str) -> Node:
 
 def normalize_value(val: object) -> Any:
     """
-    Convert common OPC UA values into simpler Python values.
+    Convert OPC UA-specific value types into JSON-serializable
+    Python-native representations.
 
     Handles text, bytes, lists, variants, and timestamps.
     Values that are not recognized are returned unchanged.
@@ -150,7 +152,7 @@ def normalize_value(val: object) -> Any:
         val (object): Value received from OPC UA.
 
     Returns:
-        Any: The converted value, or the original value.
+        Any: Normalized Python representation of the input value, or the original value.
     """
     # Return the text stored inside an OPC UA LocalizedText.
     if isinstance(val, ua.LocalizedText):
@@ -160,7 +162,7 @@ def normalize_value(val: object) -> Any:
     if isinstance(val, (bytes, bytearray)):
         return list(val)
 
-    # Convert each element of a list.
+    # Normalize each element of a list.
     if isinstance(val, list):
         return [normalize_value(v) for v in val]
 
@@ -172,5 +174,5 @@ def normalize_value(val: object) -> Any:
     if isinstance(val, datetime):
         return str(val)
 
-    # Leave other values unchanged.
+    # Fallback: return as-is
     return val

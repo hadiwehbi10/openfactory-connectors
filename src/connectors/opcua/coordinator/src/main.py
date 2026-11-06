@@ -1,5 +1,6 @@
 
-"""Start the OPC UA Coordinator for OpenFactory.
+"""
+Start the OPC UA Coordinator for OpenFactory.
 
 The coordinator manages which OPC UA gateway is responsible
 for each connected device. It uses round-robin assignment
@@ -14,7 +15,7 @@ from connectors.common.gateway_assignment.round_robin import RoundRobinGatewayAs
 
 
 class OPCUACoordinator(RoundRobinGatewayAssignmentMixin, BaseCoordinator):
-    """Manage OPC UA gateway assignments using round-robin selection."""
+    """ Manage OPC UA gateway assignments using round-robin selection. """
 
     CONNECTOR_NAME = "OPCUA"
 
